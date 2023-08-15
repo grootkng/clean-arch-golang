@@ -7,7 +7,7 @@ type Env struct {
 
 func GetEnv() *Env {
 	return &Env{
-		DB:       "host=localhost user=postgres password=postgres dbname=db port=5432",
+		DB:       "host=db user=postgres password=postgres dbname=db port=5432", // for dev environment: host=localhost
 		API_PORT: ":8080",
 	}
 }
