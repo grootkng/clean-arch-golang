@@ -21,6 +21,15 @@ func NewUserController(imp usecase.IUserUsecase) *UserController {
 	}
 }
 
+// CreateUser godoc
+// @Summary      Create user
+// @Description  create a user
+// @Tags         users
+// @Produce      json
+// @Param        user body      dto.UserDto true  "Payload"
+// @Success      201  {string}  string
+// @Failure      500  {string}  dto.HTTPInternalServerErrorDTO
+// @Router       /users [post]
 func (uc *UserController) Create(c *gin.Context) {
 	var payload dto.UserDto
 
@@ -43,6 +52,15 @@ func (uc *UserController) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, setMessage("Success"))
 }
 
+// FindAllUsers godoc
+// @Summary      Find all users
+// @Description  retrieve all users
+// @Tags         users
+// @Produce      json
+// @Success      200  {array}  	entity.User
+// @Success      204  {array}   entity.User
+// @Failure      500  {string}  dto.HTTPInternalServerErrorDTO
+// @Router       /users [get]
 func (uc *UserController) FindAll(c *gin.Context) {
 	users, err := uc.Implementation.FindAll()
 
@@ -58,6 +76,15 @@ func (uc *UserController) FindAll(c *gin.Context) {
 	}
 }
 
+// FindByIDUser godoc
+// @Summary      Find user by ID
+// @Description  retrieve a user by ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int  true  "ID"
+// @Success      200  {object}  entity.User
+// @Failure      500  {string}  dto.HTTPInternalServerErrorDTO
+// @Router       /users/{id} [get]
 func (uc *UserController) FindBy(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
@@ -80,6 +107,16 @@ func (uc *UserController) FindBy(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// UpdateByIDUser godoc
+// @Summary      Update user by ID
+// @Description  update a user by ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int  true  "ID"
+// @Param        user body      dto.UserDto true  "Payload"
+// @Success      200  {string}  string
+// @Failure      500  {string}  dto.HTTPInternalServerErrorDTO
+// @Router       /users/{id} [put]
 func (uc *UserController) UpdateBy(c *gin.Context) {
 	var payload dto.UserDto
 
@@ -110,6 +147,15 @@ func (uc *UserController) UpdateBy(c *gin.Context) {
 	c.JSON(http.StatusOK, setMessage("Success"))
 }
 
+// DeleteByIDUser godoc
+// @Summary      Delete user by ID
+// @Description  delete a user by ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int  true  "ID"
+// @Success      200  {string}  string
+// @Failure      500  {string}  dto.HTTPInternalServerErrorDTO
+// @Router       /users/{id} [delete]
 func (uc *UserController) DeleteBy(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 
