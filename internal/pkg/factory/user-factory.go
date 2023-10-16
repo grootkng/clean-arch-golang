@@ -7,7 +7,12 @@ import (
 )
 
 func UserFactory() *controller.UserController {
-	userRepository := database.NewUserRepository()
+	db, err := database.Db()
+	if err != nil {
+		return nil
+	}
+
+	userRepository := database.NewUserRepository(db)
 	userImplementation := implementation.NewUserImplementation(userRepository)
 	return controller.NewUserController(userImplementation)
 }
