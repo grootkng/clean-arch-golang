@@ -2,46 +2,34 @@ package database
 
 import (
 	"github.com/grootkng/clean-arch-golang/internal/domain/entity"
+	"gorm.io/gorm"
 )
 
-type UserRepository struct{}
-
-func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+type UserRepository struct {
+	DB *gorm.DB
 }
 
-func (impl *UserRepository) Create(user *entity.User) error {
-	db, err := Db()
-	if err != nil {
-		return err
-	}
+func NewUserRepository(db *gorm.DB) *UserRepository {
+	return &UserRepository{DB: db}
+}
 
-	db.Create(&user)
+func (ur *UserRepository) Create(user *entity.User) error {
+	ur.DB.Create(&user)
 	return nil
 }
 
-func (impl *UserRepository) FindAll() ([]entity.User, error) {
-	db, err := Db()
-	if err != nil {
-		return []entity.User{}, err
-	}
-
+func (ur *UserRepository) FindAll() ([]entity.User, error) {
 	var result []entity.User
-	if err := db.Find(&result).Error; err != nil {
+	if err := ur.DB.Find(&result).Error; err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
 
-func (impl *UserRepository) FindBy(id int) (*entity.User, error) {
-	db, err := Db()
-	if err != nil {
-		return nil, err
-	}
-
+func (ur *UserRepository) FindBy(id int) (*entity.User, error) {
 	var result entity.User
-	db.Where("id = ?", id).First(&result)
+	ur.DB.Where("id = ?", id).First(&result)
 
 	if result.Id == 0 {
 		return nil, nil
@@ -50,24 +38,14 @@ func (impl *UserRepository) FindBy(id int) (*entity.User, error) {
 	return &result, nil
 }
 
-func (impl *UserRepository) UpdateBy(user *entity.User) error {
-	db, err := Db()
-	if err != nil {
-		return err
-	}
-
-	db.Model(&user).UpdateColumns(entity.User{Name: user.Name, Age: user.Age, Gender: user.Gender})
+func (ur *UserRepository) UpdateBy(user *entity.User) error {
+	ur.DB.Model(&user).UpdateColumns(entity.User{Name: user.Name, Age: user.Age, Gender: user.Gender})
 	return nil
 }
 
-func (impl *UserRepository) DeleteBy(id int) error {
-	db, err := Db()
-	if err != nil {
-		return err
-	}
-
+func (ur *UserRepository) DeleteBy(id int) error {
 	user := entity.User{}
 	user.Id = id
-	db.Delete(&user)
+	ur.DB.Delete(&user)
 	return nil
 }
