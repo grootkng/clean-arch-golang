@@ -23,7 +23,7 @@ func SetUpRouter() *gin.Engine {
 	return router
 }
 
-func TestUserUseCase(t *testing.T) {
+func TestShouldReturn428PassingNoQueryParameters(t *testing.T) {
 	path := "/v1/users"
 
 	r := SetUpRouter()
@@ -33,8 +33,64 @@ func TestUserUseCase(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	responseData, _ := io.ReadAll(w.Body)
-	assert.Equal(t, string(""), string(responseData))
-	assert.Equal(t, http.StatusNoContent, w.Code)
+	assert.Equal(t, string("{\"message\":\"Send page correctly\"}"), string(responseData))
+	assert.Equal(t, http.StatusPreconditionRequired, w.Code)
+}
+
+func TestShouldReturn428PassingOnlyPageAsQueryParameter(t *testing.T) {
+	path := "/v1/users"
+
+	r := SetUpRouter()
+	r.GET(path, factory.UserFactory().FindAll)
+	req, _ := http.NewRequest(http.MethodGet, path, nil)
+	q := req.URL.Query()
+	q.Add("page", "1")
+	req.URL.RawQuery = q.Encode()
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	responseData, _ := io.ReadAll(w.Body)
+	assert.Equal(t, string("{\"message\":\"Send pageSize correctly\"}"), string(responseData))
+	assert.Equal(t, http.StatusPreconditionRequired, w.Code)
+}
+
+func TestShouldReturn428PassingOnlyPageSizeAsQueryParameter(t *testing.T) {
+	path := "/v1/users"
+
+	r := SetUpRouter()
+	r.GET(path, factory.UserFactory().FindAll)
+	req, _ := http.NewRequest(http.MethodGet, path, nil)
+	q := req.URL.Query()
+	q.Add("pageSize", "1")
+	req.URL.RawQuery = q.Encode()
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	responseData, _ := io.ReadAll(w.Body)
+	assert.Equal(t, string("{\"message\":\"Send page correctly\"}"), string(responseData))
+	assert.Equal(t, http.StatusPreconditionRequired, w.Code)
+}
+
+func TestFindAllShouldReturn404WhenNoRecord(t *testing.T) {
+	path := "/v1/users"
+
+	r := SetUpRouter()
+	r.GET(path, factory.UserFactory().FindAll)
+
+	req, _ := http.NewRequest(http.MethodGet, path, nil)
+	q := req.URL.Query()
+	q.Add("page", "1")
+	q.Add("pageSize", "1")
+	req.URL.RawQuery = q.Encode()
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, req)
+
+	responseData, _ := io.ReadAll(w.Body)
+	assert.Equal(t, string("{\"message\":\"record not found\"}"), string(responseData))
+	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCreateUser(t *testing.T) {
@@ -50,12 +106,18 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 }
 
-func TestGetAllUsersWithContent(t *testing.T) {
+func TestFindAllUsersWithContent(t *testing.T) {
 	path := "/v1/users"
 
 	r := SetUpRouter()
 	r.GET(path, factory.UserFactory().FindAll)
+
 	req, _ := http.NewRequest(http.MethodGet, path, nil)
+	q := req.URL.Query()
+	q.Add("page", "1")
+	q.Add("pageSize", "1")
+	req.URL.RawQuery = q.Encode()
+
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
