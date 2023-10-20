@@ -23,8 +23,8 @@ func (impl *UserImplementation) Create(user *entity.User) error {
 	return nil
 }
 
-func (impl *UserImplementation) FindAll() ([]entity.User, error) {
-	users, err := impl.Repository.FindAll()
+func (impl *UserImplementation) FindAll(page int, pageSize int) ([]entity.User, error) {
+	users, err := impl.Repository.FindAll(page, pageSize)
 	if err != nil {
 		return nil, err
 	}

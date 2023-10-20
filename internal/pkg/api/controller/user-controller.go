@@ -57,23 +57,43 @@ func (uc *UserController) Create(c *gin.Context) {
 // @Description  retrieve all users
 // @Tags         users
 // @Produce      json
-// @Success      200  {array}  	entity.User
-// @Success      204  {array}   entity.User
-// @Failure      500  {string}  dto.HTTPInternalServerErrorDTO
+// @Param        page   		query      	int  true  "page"
+// @Param        pageSize   query      	int  true  "pageSize"
+// @Success      200  			{array}  		entity.User
+// @Success      204  			{array}   	entity.User
+// @Failure      428  			{string}  	dto.HTTPInternalServerErrorDTO
+// @Failure      500  			{string}  	dto.HTTPInternalServerErrorDTO
 // @Router       /users [get]
 func (uc *UserController) FindAll(c *gin.Context) {
-	users, err := uc.Implementation.FindAll()
-
+	page, err := strconv.Atoi(c.Query("page"))
 	if err != nil {
+		c.JSON(http.StatusPreconditionRequired, setMessage("Send page correctly"))
+		return
+	}
+
+	pageSize, err := strconv.Atoi(c.Query("pageSize"))
+	if err != nil {
+		c.JSON(http.StatusPreconditionRequired, setMessage("Send pageSize correctly"))
+		return
+	}
+
+	users, err := uc.Implementation.FindAll(page, pageSize)
+	if err != nil {
+		if err.Error() == "record not found" {
+			c.JSON(http.StatusNotFound, setMessage(err.Error()))
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, setMessage("Something went wrong. Error: "+err.Error()))
 		return
 	}
 
 	if len(users) > 0 {
 		c.JSON(http.StatusOK, users)
-	} else {
-		c.JSON(http.StatusNoContent, users)
+		return
 	}
+
+	c.JSON(http.StatusNoContent, users)
 }
 
 // FindByIDUser godoc

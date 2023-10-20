@@ -5,7 +5,7 @@ import (
 )
 
 type IUserUsecase interface {
-	FindAll() ([]entity.User, error)
+	FindAll(page int, pageSize int) ([]entity.User, error)
 	FindBy(id int) (*entity.User, error)
 	UpdateBy(user *entity.User) error
 	DeleteBy(id int) error

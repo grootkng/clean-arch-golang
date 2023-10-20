@@ -18,9 +18,9 @@ func (ur *UserRepository) Create(user *entity.User) error {
 	return nil
 }
 
-func (ur *UserRepository) FindAll() ([]entity.User, error) {
+func (ur *UserRepository) FindAll(page int, pageSize int) ([]entity.User, error) {
 	var result []entity.User
-	if err := ur.DB.Find(&result).Error; err != nil {
+	if err := ur.DB.Scopes(Paginate(page, pageSize)).Last(&result).Error; err != nil {
 		return nil, err
 	}
 

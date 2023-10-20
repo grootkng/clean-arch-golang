@@ -25,6 +25,22 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Find all users",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "page",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "pageSize",
+                        "name": "pageSize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -42,6 +58,12 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/entity.User"
                             }
+                        }
+                    },
+                    "428": {
+                        "description": "Precondition Required",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "500": {

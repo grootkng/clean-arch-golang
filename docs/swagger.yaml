@@ -25,6 +25,17 @@ paths:
   /users:
     get:
       description: retrieve all users
+      parameters:
+      - description: page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: pageSize
+        in: query
+        name: pageSize
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -40,6 +51,10 @@ paths:
             items:
               $ref: '#/definitions/entity.User'
             type: array
+        "428":
+          description: Precondition Required
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
