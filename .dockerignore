@@ -1,0 +1,6 @@
+assets/
+scripts/
+tests/
+
+Makefile
+*.md
